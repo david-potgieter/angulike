@@ -1,5 +1,5 @@
 ﻿/**
- * AngularJS directives for social sharing buttons - Facebook Like, Google+, Twitter and Pinterest 
+ * AngularJS directives for social sharing buttons - Facebook Like, Google+, Twitter and Pinterest
  * @author Jason Watmore <jason@pointblankdevelopment.com.au> (http://jasonwatmore.com)
  * @version 1.2.0
  */
@@ -11,12 +11,24 @@
               return {
                   restrict: 'A',
                   scope: {
-                      fbLike: '=?'
+                      fbLike       : '=?',
+                      fbType       : '@fbType',
+                      fbShare      : '@fbShare',
+                      fbShowFaces  : '@fbShowFaces',
+                      fbActionType : '@fbActionType',
+                      fbButtonLang : '@fbButtonLang'
                   },
                   link: function (scope, element, attrs) {
                       if (!$window.FB) {
+
+                          scope.fbType       = ( scope.fbType === undefined ? 'standard' : scope.fbType );
+                          scope.fbShare      = ( scope.fbShare === undefined ? 'true' : scope.fbShare );
+                          scope.fbShowFaces  = ( scope.fbShowFaces === undefined ? 'true' : scope.fbShowFaces );
+                          scope.fbActionType = ( scope.fbActionType === undefined ? 'like' : scope.fbActionType );
+                          scope.fbButtonLang = ( scope.fbButtonLang === undefined ? 'en_US' : scope.fbButtonLang );
+
                           // Load Facebook SDK if not already loaded
-                          $.getScript('//connect.facebook.net/en_US/sdk.js', function () {
+                          $.getScript('//connect.facebook.net/'+scope.fbButtonLang+'/sdk.js', function () {
                               $window.FB.init({
                                   appId: $rootScope.facebookAppId,
                                   xfbml: true,
@@ -36,15 +48,15 @@
                               var unbindWatch = scope.$watch('fbLike', function (newValue, oldValue) {
                                   if (newValue) {
                                       renderLikeButton();
-                                      
+
                                       // only need to run once
                                       unbindWatch();
                                   }
-                                  
+
                               });
                               return;
                           } else {
-                              element.html('<div class="fb-like"' + (!!scope.fbLike ? ' data-href="' + scope.fbLike + '"' : '') + ' data-layout="button_count" data-action="like" data-show-faces="true" data-share="true"></div>');
+                              element.html('<div class="fb-like"' + (!!scope.fbLike ? ' data-href="' + scope.fbLike + '"' : '') + ' data-layout="' + scope.fbType + '" data-action="' + scope.fbActionType + '" data-show-faces="' + scope.fbShowFaces + '" data-share="' + scope.fbShare + '"></div>');
                               $window.FB.XFBML.parse(element.parent()[0]);
                           }
                       }
@@ -122,7 +134,7 @@
                               var unbindWatch = scope.$watch('tweet', function (newValue, oldValue) {
                                   if (newValue) {
                                       renderTweetButton();
-                                  
+
                                       // only need to run once
                                       unbindWatch();
                                   }
@@ -178,7 +190,7 @@
                               var unbindWatch = scope.$watch('pinIt', function (newValue, oldValue) {
                                   if (newValue) {
                                       renderPinItButton();
-                                      
+
                                       // only need to run once
                                       unbindWatch();
                                   }
